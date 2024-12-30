@@ -51,7 +51,7 @@ def home():
         predicted_alphabet = alphabet_map[predicted_class]
 
         # Pass result to the classify.html template
-        return render_template("classify.html", result=predicted_alphabet)
+        return render_template("classify.html", result=predicted_alphabet , img_path = file_path)
 
     return render_template('home.html', form=form)
 
@@ -59,3 +59,4 @@ if __name__ == '__main__':
     # Ensure the upload folder exists
     os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
     app.run(debug=True)
+

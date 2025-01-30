@@ -1,7 +1,6 @@
-from flask import Flask, render_template, request
+from flask import Flask, render_template, request, jsonify
 from flask_wtf import FlaskForm
 from wtforms import FileField, SubmitField
-from werkzeug.utils import secure_filename
 import os
 from wtforms.validators import InputRequired
 import tensorflow as tf
@@ -50,20 +49,23 @@ def classify_image(file_path):
 @app.route('/', methods=['GET', 'POST'])
 def home():
     print(f"Processing on Thread ID: {threading.get_ident()}")
-    form = UploadFileForm()
-    if form.validate_on_submit():
-        file = form.file.data
-        file_path = os.path.join(app.config['UPLOAD_FOLDER'], secure_filename(file.filename))
-        file.save(file_path)
+    with open('log.txt', 'a') as f:
+        f.write(f"Processing on Thread ID: {threading.get_ident()}\n")
+    
+    if request.method == 'POST':
+        # Récupérer le fichier de l'image
+        file = request.files.get('file')
+        if file:
+            file_path = os.path.join(app.config['UPLOAD_FOLDER'], file.filename)
+            file.save(file_path)
 
-        # Use threading to handle prediction in parallel
-        future = executor.submit(classify_image, file_path)
-        predicted_alphabet = future.result()
+            # Effectuer la classification
+            predicted_alphabet = classify_image(file_path)
 
-        # Pass result to the classify.html template
-        return render_template("classify.html", result=predicted_alphabet, img_path=file_path)
-
-    return render_template('home.html', form=form)
+            # Retourner le résultat à l'utilisateur
+            return predicted_alphabet
+    
+    return 'Please send a POST request with an image file.'
 
 if __name__ == '__main__':
     # Ensure the upload folder exists

@@ -1,4 +1,4 @@
-### Sign language gestures CNN classification with Flask
+# Sign language gestures CNN classification with Flask
 This project is designed to demonstrate an image classification pipeline using multiple components. It includes a Jupyter notebook for training a machine learning model, a Flask app for creating the server-side logic.
 
 ## Project Structure
